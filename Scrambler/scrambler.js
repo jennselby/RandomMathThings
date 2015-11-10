@@ -1,70 +1,63 @@
-class  Hub {
-    float radius;
-    float speed;
-    Object[] orbiters;
-    float centerX;
-    float centerY;
-    float angle;
+var Hub = function(_radius, _speed, _orbiters) {
+    this.radius = _radius;
+    this.speed = _speed;
+    this.orbiters = _orbiters;
+    this.centerX = 0;
+    this.centerY = 0;
+    this.angle = 0;
 
-    Hub(float _radius, float _speed, Object[] _orbiters) {
-        radius = _radius;
-        speed = _speed;
-        orbiters = _orbiters;
-    
-        centerX = 0;
-        centerY = 0;
-        angle = 0;
-    
-        for (int index = 0; index < orbiters.length; ++index) {
-            orbiters[index].angle = ((2*PI)/orbiters.length) * index;
-        }
+    for (var index = 0; index < this.orbiters.length; ++index) {
+        this.orbiters[index].angle = ((2*Math.PI)/this.orbiters.length) * index;
     }
+}
 
-    void drawNext () {
-        fill(255, 234, 0);
-        ellipse(centerX, centerY, radius/10, radius/10);
+Hub.prototype.drawNext = function (context) {
+    context.beginPath();
+    context.arc(this.centerX, this.centerY, this.radius/10, 0, 2 * Math.PI, false);
+    context.fillStyle = '#FFEA00';
+    context.fill();
+    context.stroke();
     
-        for (index index = 0; index < orbiters.length; ++index) {
-            Object orbiter = orbiters[index];
-            orbiter.centerX = centerX + cos(orbiter.angle) * radius;
-            orbiter.centerY = centerY + sin(orbiter.angle) * radius;
-        
-            orbiter.drawNext();
-            stroke(0, 0, 0);
-            line(centerX, centerY, orbiter.centerX, orbiter.centerY);
-        
-            orbiter.angle += speed;
-            if (orbiter.angle > 2 * PI) {
-                orbiter.angle -= (2 * PI);
-            }
+    for (var index = 0; index < this.orbiters.length; ++index) {
+        var orbiter = this.orbiters[index];
+        orbiter.centerX = this.centerX + Math.cos(orbiter.angle) * this.radius;
+        orbiter.centerY = this.centerY + Math.sin(orbiter.angle) * this.radius;
+    
+        orbiter.drawNext(context);
+
+        context.beginPath();
+        context.moveTo(this.centerX, this.centerY);
+        context.lineTo(orbiter.centerX, orbiter.centerY);
+        context.stroke();
+    
+        orbiter.angle += this.speed;
+        if (orbiter.angle > 2 * Math.PI) {
+            orbiter.angle -= (2 * Math.PI);
         }
     }
 }
 
-class Car {
-    float centerX;
-    float centerY;
-    float angle;
-
-    Car () {
-        centerX = 0;
-        centerY = 0;
-        angle = 0;
-    }
-    void drawNext () {
-        fill(255, 234, 0);
-        ellipse(centerX, centerY, 20, 20);
-    }
+function Car(_centerX, _centerY, _angle) {
+    this.centerX = _centerX;
+    this.centerY = _centerY;
+    this.angle = _angle;
 }
 
-Hub scrambler;
+Car.prototype.drawNext = function (context) {
+    context.beginPath();
+    context.arc(this.centerX, this.centerY, 20, 0, 2 * Math.PI, false);
+    context.fillStyle = '#FFEA00';
+    context.fill();
+    context.stroke();
+}
 
-void setup () {
-    size(800, 800);
-    Object[] carHubs = new Array(5);
-    for (int hubIndex = 0; hubIndex < carHubs.length; ++hubIndex) {
-        Object[] cars = new Array(4);
-        for (int carIndex = 0; carIndex < cars.length; ++carIndex) {
+var scrambler;
+
+function setup () {
+    var carHubs = new Array(5);
+    for (var hubIndex = 0; hubIndex < carHubs.length; ++hubIndex) {
+        var cars = new Array(4);
+        for (var carIndex = 0; carIndex < cars.length; ++carIndex) {
             cars[carIndex] = new Car();
         }
         carHubs[hubIndex] = new Hub(80, 0.02, cars);
@@ -74,7 +67,13 @@ void setup () {
     scrambler.centerY = 400;
 }
 
-void draw () {
-    background(255, 255, 255);
-    scrambler.drawNext();
+function draw () {
+    var canvas = document.getElementById("scramblerCanvas");
+    var context = canvas.getContext('2d');
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    scrambler.drawNext(context);
 }
+
+setup();
+window.setInterval(draw, 17);
