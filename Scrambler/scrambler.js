@@ -54,15 +54,23 @@ Car.prototype.drawNext = function (context) {
 var scrambler;
 
 function setup () {
-    var carHubs = new Array(5);
+    var numHubs = 5;
+    var hubSize = 200;
+    var hubSpeed = 0.01;
+
+    var numCars = 4;
+    var carSize = 80;
+    var carSpeed = 0.02;
+
+    var carHubs = new Array(numHubs);
     for (var hubIndex = 0; hubIndex < carHubs.length; ++hubIndex) {
-        var cars = new Array(4);
+        var cars = new Array(numCars);
         for (var carIndex = 0; carIndex < cars.length; ++carIndex) {
             cars[carIndex] = new Car();
         }
-        carHubs[hubIndex] = new Hub(80, 0.02, cars);
+        carHubs[hubIndex] = new Hub(carSize, carSpeed, cars);
     }
-    scrambler = new Hub(200, 0.01, carHubs);
+    scrambler = new Hub(hubSize, hubSpeed, carHubs);
     scrambler.centerX = 400;
     scrambler.centerY = 400;
 }
